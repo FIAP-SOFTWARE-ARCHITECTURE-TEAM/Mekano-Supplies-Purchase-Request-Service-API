@@ -1,0 +1,77 @@
+# Java / Maven
+target/
+build/
+out/
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+dependency-reduced-pom.xml
+.flattened-pom.xml
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Quarkus
+.quarkus/
+quarkus-app/
+*.quarkus.log
+
+# Logs
+*.log
+logs/
+
+# Testes e cobertura
+*.exec
+*.hprof
+*.pid
+*.dump
+surefire-reports/
+failsafe-reports/
+jacoco.exec
+jacoco-report/
+coverage/
+
+# IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.project
+.classpath
+.factorypath
+.apt_generated/
+bin/
+nbproject/
+*.nb-project
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Ambiente
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Docker
+docker-compose.override.yml
+
+# Segredos e certificados locais
+*.pem
+*.key
+*.p12
+*.jks
+secrets/
+
+# Temporários
+*.tmp
+*.temp
+*.bak
+*.orig
+*.rej
+~$*
