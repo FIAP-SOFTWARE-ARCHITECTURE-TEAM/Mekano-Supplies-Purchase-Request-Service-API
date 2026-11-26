@@ -2,6 +2,8 @@
 
 API de **estoque, requisição de compra e NF de entrada** do projeto **Mekano** — **Fase 4**.
 
+> **Status atual:** Sprint 0 (fundação). Este repositório contém a documentação, o README e o `.gitignore`; a estrutura Maven, o Docker Compose e o CI serão adicionados na sequência do Sprint 0.
+
 > **Prefixo de todos os endpoints:** `/api/v4`
 >
 > Exemplo: `GET http://localhost:8082/api/v4/requisicoes-compra`

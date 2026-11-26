@@ -314,7 +314,7 @@ Validar a integração com o Registry, fazer hardening e preparar a release.
 - [ ] Auditoria de roles comentadas em todos os endpoints.
 - [ ] README e docs finais.
 - [ ] Diagramas Mermaid (arquitetura, fluxo de NF e estoque).
-- [ ] Tag `v1.0.0` (release acadêmica da fase 4).
+- [ ] Tag `v4.0.0` (release acadêmica da fase 4).
 - [ ] PR final.
 
 ### Critérios de aceite
