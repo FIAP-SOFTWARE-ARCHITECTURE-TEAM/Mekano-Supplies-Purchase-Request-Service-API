@@ -5,6 +5,7 @@ import com.fiap.mekano.supplies.domain.model.MotivoRequisicao;
 import com.fiap.mekano.supplies.domain.model.RequisicaoCompra;
 import com.fiap.mekano.supplies.domain.model.StatusRequisicao;
 import com.fiap.mekano.supplies.domain.port.in.CreateRequisicaoCompraCommand;
+import com.fiap.mekano.supplies.domain.port.in.EstoqueServicePort;
 import com.fiap.mekano.supplies.domain.port.in.ItemRequisicaoCompraCommand;
 import com.fiap.mekano.supplies.domain.port.out.PecaCatalogItem;
 import com.fiap.mekano.supplies.domain.port.out.PecaCatalogPort;
@@ -47,6 +48,9 @@ class RequisicaoCompraServiceTest {
     @Mock
     PecaCatalogPort pecaCatalog;
 
+    @Mock
+    EstoqueServicePort estoqueService;
+
     @InjectMocks
     RequisicaoCompraService service;
 
@@ -76,6 +80,7 @@ class RequisicaoCompraServiceTest {
         assertThat(resultado.getItens().get(0).getQuantidade()).isEqualTo(5L);
 
         verify(pecaCatalog).buscarPorUuids(argThat(uuids -> uuids.size() == 1 && uuids.contains(PECA_A)));
+        verify(estoqueService).obterOuCriar(PECA_A);
         verify(repository).save(any(RequisicaoCompra.class));
     }
 
@@ -90,6 +95,7 @@ class RequisicaoCompraServiceTest {
                 AppException.class);
 
         assertThat(ex.getStatus()).isEqualTo(404);
+        verifyNoInteractions(estoqueService);
         verify(repository, never()).save(any());
     }
 
@@ -107,6 +113,7 @@ class RequisicaoCompraServiceTest {
                 AppException.class);
 
         assertThat(ex.getStatus()).isEqualTo(409);
+        verifyNoInteractions(estoqueService);
         verify(repository, never()).save(any());
     }
 

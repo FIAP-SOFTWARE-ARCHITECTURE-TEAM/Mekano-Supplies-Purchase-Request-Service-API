@@ -66,6 +66,44 @@ class RequisicaoCompraTest {
         assertThat(requisicao.getCreatedAt()).isEqualTo(java.time.LocalDateTime.of(2026, 11, 26, 10, 0));
     }
 
+    @Test
+    @DisplayName("permite enviar e receber requisicao nas transicoes previstas")
+    void enviaERecebe() {
+        RequisicaoCompra aberta = RequisicaoCompra.criar(List.of(item(PECA_A)), null);
+
+        RequisicaoCompra enviada = aberta.enviar();
+        RequisicaoCompra recebida = enviada.receber();
+
+        assertThat(aberta.getStatus()).isEqualTo(StatusRequisicao.ABERTA);
+        assertThat(enviada.getStatus()).isEqualTo(StatusRequisicao.ENVIADA);
+        assertThat(recebida.getStatus()).isEqualTo(StatusRequisicao.PRODUTO_RECEBIDO);
+        assertThat(recebida.getId()).isEqualTo(aberta.getId());
+    }
+
+    @Test
+    @DisplayName("rejeita transicoes invalidas")
+    void rejeitaTransicaoInvalida() {
+        RequisicaoCompra aberta = RequisicaoCompra.criar(List.of(item(PECA_A)), null);
+
+        AppException ex = catchThrowableOfType(aberta::receber, AppException.class);
+
+        assertThat(ex.getStatus()).isEqualTo(409);
+    }
+
+    @Test
+    @DisplayName("cancela requisicao aberta de estoque minimo mas bloqueia ordem de servico")
+    void cancelarRespeitaMotivoEStatus() {
+        RequisicaoCompra aberta = RequisicaoCompra.criar(List.of(item(PECA_A)), null);
+        RequisicaoCompra ordemServico = RequisicaoCompra.reconstitute(
+                UUID.randomUUID(), List.of(item(PECA_A)), StatusRequisicao.ABERTA,
+                MotivoRequisicao.ORDEM_SERVICO, null, java.time.LocalDateTime.now());
+
+        assertThat(aberta.cancelar().getStatus()).isEqualTo(StatusRequisicao.CANCELADA);
+        AppException ex = catchThrowableOfType(ordemServico::cancelar, AppException.class);
+
+        assertThat(ex.getStatus()).isEqualTo(409);
+    }
+
     private static ItemRequisicaoCompra item(UUID pecaUuid) {
         return ItemRequisicaoCompra.criar(
                 pecaUuid, "PEA-001", "Filtro de Oleo", 5L, new BigDecimal("45.90"));

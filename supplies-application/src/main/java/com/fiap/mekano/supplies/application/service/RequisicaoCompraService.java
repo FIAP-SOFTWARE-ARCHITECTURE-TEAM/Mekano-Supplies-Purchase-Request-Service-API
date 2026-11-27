@@ -6,6 +6,7 @@ import com.fiap.mekano.supplies.domain.model.ItemRequisicaoCompra;
 import com.fiap.mekano.supplies.domain.model.PageResult;
 import com.fiap.mekano.supplies.domain.model.RequisicaoCompra;
 import com.fiap.mekano.supplies.domain.port.in.CreateRequisicaoCompraCommand;
+import com.fiap.mekano.supplies.domain.port.in.EstoqueServicePort;
 import com.fiap.mekano.supplies.domain.port.in.ItemRequisicaoCompraCommand;
 import com.fiap.mekano.supplies.domain.port.in.RequisicaoCompraServicePort;
 import com.fiap.mekano.supplies.domain.port.out.PecaCatalogItem;
@@ -34,10 +35,13 @@ public class RequisicaoCompraService implements RequisicaoCompraServicePort {
 
     private final RequisicaoCompraRepositoryPort repository;
     private final PecaCatalogPort pecaCatalog;
+    private final EstoqueServicePort estoqueService;
 
-    public RequisicaoCompraService(RequisicaoCompraRepositoryPort repository, PecaCatalogPort pecaCatalog) {
+    public RequisicaoCompraService(RequisicaoCompraRepositoryPort repository, PecaCatalogPort pecaCatalog,
+                                  EstoqueServicePort estoqueService) {
         this.repository = repository;
         this.pecaCatalog = pecaCatalog;
+        this.estoqueService = estoqueService;
     }
 
     @Override
@@ -78,6 +82,7 @@ public class RequisicaoCompraService implements RequisicaoCompraServicePort {
                 Log.warnf("Validacao falhou: pecaUuid=%s esta inativa no catalogo", item.pecaUuid());
                 throw new AppException(409, Messages.get("requisicao_compra.peca.inativa", peca.codigo()));
             }
+            estoqueService.obterOuCriar(peca.uuid());
             itens.add(ItemRequisicaoCompra.criar(
                     peca.uuid(),
                     peca.codigo(),
@@ -91,6 +96,33 @@ public class RequisicaoCompraService implements RequisicaoCompraServicePort {
 
         Log.infof("Requisicao de compra criada: requisicaoUuid=%s, itens=%d, status=%s, motivo=%s",
                 salva.getId(), salva.getItens().size(), salva.getStatus(), salva.getMotivo());
+        return salva;
+    }
+
+    @Override
+    @Transactional
+    public RequisicaoCompra enviar(UUID id) {
+        RequisicaoCompra requisicao = buscar(id).enviar();
+        RequisicaoCompra salva = repository.save(requisicao);
+        Log.infof("Requisicao enviada: requisicaoUuid=%s", salva.getId());
+        return salva;
+    }
+
+    @Override
+    @Transactional
+    public RequisicaoCompra receber(UUID id) {
+        RequisicaoCompra requisicao = buscar(id).receber();
+        RequisicaoCompra salva = repository.save(requisicao);
+        Log.infof("Requisicao recebida: requisicaoUuid=%s", salva.getId());
+        return salva;
+    }
+
+    @Override
+    @Transactional
+    public RequisicaoCompra cancelar(UUID id) {
+        RequisicaoCompra requisicao = buscar(id).cancelar();
+        RequisicaoCompra salva = repository.save(requisicao);
+        Log.infof("Requisicao cancelada: requisicaoUuid=%s", salva.getId());
         return salva;
     }
 

@@ -4,9 +4,8 @@
 **Base local:** `http://localhost:8082/api/v4`
 **Registry:** `http://localhost:8081/api/v4`
 
-> **Sprint 1:** implementados `POST /requisicoes-compra`,
-> `GET /requisicoes-compra` e `GET /requisicoes-compra/{uuid}`. Envio,
-> recebimento, cancelamento e os demais recursos pertencem às sprints seguintes.
+> **Sprint 2:** implementados os endpoints de requisição, o ciclo de vida e a API
+> interna de estoque descrita neste documento. NF de entrada pertence à Sprint 3.
 
 ---
 
@@ -233,17 +232,21 @@ Content-Type: application/json
 }
 ```
 
-Resposta `200`:
+Resposta `201` para um movimento aplicado; `200` quando a chave idempotente já
+foi usada pela mesma operação:
 
 ```json
 {
-  "movimentoUuid": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+  "uuid": "cccccccc-cccc-cccc-cccc-cccccccccccc",
   "pecaUuid": "55555555-5555-5555-5555-555555555555",
   "tipo": "CREDITO",
   "quantidade": 10,
-  "saldoAtual": 20,
-  "saldoReservado": 0,
-  "disponivel": 20,
+  "saldoAtualApos": 20,
+  "saldoReservadoApos": 0,
+  "origem": "NF_ENTRADA",
+  "referenciaUuid": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+  "idempotencyKey": "nf:bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb:55555555-5555-5555-5555-555555555555:CREDITO",
+  "createdAt": "2026-11-27T10:00:00",
   "idempotente": false
 }
 ```
@@ -265,15 +268,19 @@ Resposta `200`:
 
 ```json
 {
+  "uuid": "dddddddd-dddd-dddd-dddd-dddddddddddd",
   "pecaUuid": "55555555-5555-5555-5555-555555555555",
   "saldoAtual": 20,
   "saldoReservado": 0,
   "disponivel": 20,
-  "estoqueMinimo": 2
+  "estoqueMinimo": 2,
+  "version": 1,
+  "createdAt": "2026-11-27T10:00:00",
+  "updatedAt": "2026-11-27T10:05:00"
 }
 ```
 
-- Cria a linha com zeros se não existir.
+- Cria a linha com zeros se não existir; não cria movimento.
 
 ### 4.3 Abaixo do mínimo
 
@@ -287,13 +294,21 @@ Resposta `200`:
 {
   "content": [
     {
+      "uuid": "dddddddd-dddd-dddd-dddd-dddddddddddd",
       "pecaUuid": "55555555-5555-5555-5555-555555555555",
       "saldoAtual": 1,
       "saldoReservado": 0,
       "disponivel": 1,
-      "estoqueMinimo": 2
+      "estoqueMinimo": 2,
+      "version": 4,
+      "createdAt": "2026-11-27T10:00:00",
+      "updatedAt": "2026-11-27T10:05:00"
     }
-  ]
+  ],
+  "page": 0,
+  "size": 20,
+  "totalElements": 1,
+  "totalPages": 1
 }
 ```
 
