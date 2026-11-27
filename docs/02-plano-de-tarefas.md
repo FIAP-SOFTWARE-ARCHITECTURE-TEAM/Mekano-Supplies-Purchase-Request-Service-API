@@ -280,7 +280,7 @@ Implementar a NF de entrada com crédito de estoque local e cancelamento com est
 - [x] Testes de repositório.
 - [x] Testes REST.
 - [x] Atualizar `docs/03-modelo-de-dados.md`, `docs/04-contratos-api.md` e `docs/07-decisoes-e-riscos.md`.
-- [ ] Abrir PR.
+- [x] Abrir PR: [#5](https://github.com/FIAP-SOFTWARE-ARCHITECTURE-TEAM/Mekano-Supplies-Purchase-Request-Service-API/pull/5).
 
 ### Critérios de aceite
 
