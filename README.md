@@ -164,6 +164,7 @@ Os testes usam **H2 em memória (modo PostgreSQL)**, sem depender de Docker:
 
 - `MigrationSmokeTest` aplica `V1`/`V2` do zero via Flyway.
 - Testes de contrato do client do Registry usam **WireMock**.
+- O cenário E2E com os serviços reais está documentado no README do Registry e pode ser executado pelo script `scripts/Test-RegistrySuppliesE2E.ps1` do repositório Registry.
 - Testes REST usam `@InjectMock` do `PecaCatalogPort` e RestAssured.
 
 ---

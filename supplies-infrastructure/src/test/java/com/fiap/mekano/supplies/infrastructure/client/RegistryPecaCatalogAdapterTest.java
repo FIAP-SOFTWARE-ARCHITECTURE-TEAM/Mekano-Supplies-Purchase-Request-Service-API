@@ -104,8 +104,20 @@ class RegistryPecaCatalogAdapterTest {
     }
 
     @Test
-    @DisplayName("mapeia resposta sem listas como resultado vazio")
-    void respostaSemListas() {
+    @DisplayName("rejeita lista nula antes de chamar o Registry")
+    void listaNulaVira400() {
+        AppException ex = catchThrowableOfType(
+                () -> adapter.buscarPorUuids(null),
+                AppException.class);
+
+        assertThat(ex.getStatus()).isEqualTo(400);
+        WireMockRegistryTestResource.server().verify(0,
+                postRequestedFor(urlEqualTo(BATCH_PATH)));
+    }
+
+    @Test
+    @DisplayName("rejeita resposta sem listas")
+    void respostaSemListasVira503() {
         WireMockRegistryTestResource.server().stubFor(
                 post(urlEqualTo(BATCH_PATH))
                         .willReturn(aResponse()
@@ -113,10 +125,52 @@ class RegistryPecaCatalogAdapterTest {
                                 .withHeader("Content-Type", "application/json")
                                 .withBody("{}")));
 
-        PecaCatalogResult resultado = adapter.buscarPorUuids(List.of(PECA_A));
+        AppException ex = catchThrowableOfType(
+                () -> adapter.buscarPorUuids(List.of(PECA_A)),
+                AppException.class);
 
-        assertThat(resultado.pecas()).isEmpty();
-        assertThat(resultado.naoEncontradas()).isEmpty();
+        assertThat(ex.getStatus()).isEqualTo(503);
+    }
+
+    @Test
+    @DisplayName("rejeita resposta que nao contabiliza todos os UUIDs solicitados")
+    void respostaIncompletaVira503() {
+        WireMockRegistryTestResource.server().stubFor(
+                post(urlEqualTo(BATCH_PATH))
+                        .willReturn(aResponse()
+                                .withStatus(200)
+                                .withHeader("Content-Type", "application/json")
+                                .withBody("""
+                                        {"pecas": [], "naoEncontradas": []}
+                                        """)));
+
+        AppException ex = catchThrowableOfType(
+                () -> adapter.buscarPorUuids(List.of(PECA_A)),
+                AppException.class);
+
+        assertThat(ex.getStatus()).isEqualTo(503);
+    }
+
+    @Test
+    @DisplayName("rejeita peca sem campos obrigatorios no contrato")
+    void pecaSemCamposObrigatoriosVira503() {
+        WireMockRegistryTestResource.server().stubFor(
+                post(urlEqualTo(BATCH_PATH))
+                        .willReturn(aResponse()
+                                .withStatus(200)
+                                .withHeader("Content-Type", "application/json")
+                                .withBody("""
+                                        {
+                                          "pecas": [{"uuid": "%s"}],
+                                          "naoEncontradas": []
+                                        }
+                                        """.formatted(PECA_A))));
+
+        AppException ex = catchThrowableOfType(
+                () -> adapter.buscarPorUuids(List.of(PECA_A)),
+                AppException.class);
+
+        assertThat(ex.getStatus()).isEqualTo(503);
     }
 
     @Test
