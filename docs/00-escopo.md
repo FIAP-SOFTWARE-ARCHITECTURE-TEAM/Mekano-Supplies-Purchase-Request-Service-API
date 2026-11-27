@@ -158,13 +158,13 @@ Explicação completa em [`adr/ADR-003-ownership-estoque.md`](adr/ADR-003-owners
 
 - [ ] Estoque com saldo, reservado, mínimo e movimentos em `/api/v4`.
 - [ ] Requisição de compra: criar, listar, buscar, enviar, receber e cancelar.
-- [ ] NF de entrada: registrar, listar, buscar e cancelar.
-- [ ] NF e estoque na mesma transação local.
-- [ ] Cancelamento de NF com estorno e `409` em saldo insuficiente.
-- [ ] Idempotência no ledger de estoque.
-- [ ] Integração com o batch do Registry.
-- [ ] Migrations finais aplicadas do zero.
-- [ ] Seed de estoque inicial.
+- [x] NF de entrada: registrar, listar, buscar e cancelar.
+- [x] NF e estoque na mesma transação local.
+- [x] Cancelamento de NF com estorno e `409` em saldo insuficiente.
+- [x] Idempotência no ledger de estoque.
+- [x] Integração com o batch do Registry.
+- [x] Migrations finais aplicadas do zero.
+- [x] Seed de estoque inicial.
 - [ ] DBeaver conectando em `localhost:5434/mekano_supplies`.
 - [ ] README e `docs/` completos.
 - [ ] CI verde.

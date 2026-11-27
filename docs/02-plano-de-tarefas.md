@@ -215,60 +215,60 @@ Implementar a NF de entrada com crédito de estoque local e cancelamento com est
 
 #### Domínio
 
-- [ ] `NfEntrada` com:
+- [x] `NfEntrada` com:
   - `chaveAcesso` (44 dígitos);
   - `valorTotal` (> 0);
   - `requisicaoUuid`;
   - `status` (`ATIVA`/`CANCELADA`);
   - `motivoCancelamento`, `dataCancelamento`.
-- [ ] Regras:
+- [x] Regras:
   - requisição precisa estar `PRODUTO_RECEBIDO`;
   - chave única;
   - valor > 0.
 
 #### Application
 
-- [ ] `NfEntradaService`:
+- [x] `NfEntradaService`:
   - `registrar`;
   - `listar`;
   - `buscar`;
   - `cancelar`.
-- [ ] Registrar em transação local:
+- [x] Registrar em transação local:
   - salvar NF `ATIVA`;
   - creditar estoque de cada item da requisição;
   - gravar movimentos com chave `nf:<uuid>:<pecaUuid>:CREDITO`.
-- [ ] Cancelar em transação local:
+- [x] Cancelar em transação local:
   - somente `ATIVA`;
   - debitar estoque de cada item;
   - gravar movimentos com chave `nf:<uuid>:<pecaUuid>:ESTORNO`;
   - marcar `CANCELADA`;
   - `409` se saldo insuficiente, com rollback.
-- [ ] **Sem** flag `estoque_creditado` e **sem** endpoint de reprocessamento.
+- [x] **Sem** flag `estoque_creditado` e **sem** endpoint de reprocessamento.
 
 #### Infrastructure
 
-- [ ] `NfEntradaEntity`, repositório, mapper.
-- [ ] Migration `V5__create_nf_entradas.sql`.
-- [ ] Seed `V6__seed_estoque_inicial.sql` com as duas peças.
-- [ ] Índices:
+- [x] `NfEntradaEntity`, repositório, mapper.
+- [x] Migration `V5__create_nf_entradas.sql`.
+- [x] Seed `V6__seed_estoque_inicial.sql` com as duas peças.
+- [x] Índices:
   - `chave_acesso` única;
   - `requisicao_uuid`;
   - `status`.
 
 #### REST
 
-- [ ] `NfEntradaResource`:
+- [x] `NfEntradaResource`:
   - `POST /api/v4/nf-entrada`;
   - `GET /api/v4/nf-entrada`;
   - `GET /api/v4/nf-entrada/{uuid}`;
   - `POST /api/v4/nf-entrada/{uuid}/cancelar`.
-- [ ] DTOs e validações.
-- [ ] `@RolesAllowed("admin")` comentado.
+- [x] DTOs e validações.
+- [x] `@RolesAllowed("admin")` comentado.
 
 #### Testes mínimos e documentação
 
-- [ ] Testes de domínio.
-- [ ] Testes de service:
+- [x] Testes de domínio.
+- [x] Testes de service:
   - sucesso;
   - chave duplicada;
   - requisição em status inválido;
@@ -277,18 +277,18 @@ Implementar a NF de entrada com crédito de estoque local e cancelamento com est
   - cancelamento;
   - saldo insuficiente;
   - rollback.
-- [ ] Testes de repositório.
-- [ ] Testes REST.
-- [ ] Atualizar `docs/03-modelo-de-dados.md`, `docs/04-contratos-api.md` e `docs/07-decisoes-e-riscos.md`.
-- [ ] Abrir PR.
+- [x] Testes de repositório.
+- [x] Testes REST.
+- [x] Atualizar `docs/03-modelo-de-dados.md`, `docs/04-contratos-api.md` e `docs/07-decisoes-e-riscos.md`.
+- [x] Abrir PR: [#5](https://github.com/FIAP-SOFTWARE-ARCHITECTURE-TEAM/Mekano-Supplies-Purchase-Request-Service-API/pull/5).
 
 ### Critérios de aceite
 
-- [ ] NF registrada e estoque creditado na mesma transação.
-- [ ] NF cancelada e estoque estornado na mesma transação.
-- [ ] `409` em saldo insuficiente sem alterar NF nem estoque.
-- [ ] Seed de estoque aplicado.
-- [ ] CI verde.
+- [x] NF registrada e estoque creditado na mesma transação.
+- [x] NF cancelada e estoque estornado na mesma transação.
+- [x] `409` em saldo insuficiente sem alterar NF nem estoque.
+- [x] Seed de estoque aplicado.
+- [x] CI verde (local: `./mvnw clean test`).
 
 ---
 

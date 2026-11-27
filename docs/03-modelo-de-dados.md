@@ -235,7 +235,9 @@ Falha por saldo insuficiente → `409` + rollback; NF permanece `ATIVA`.
 
 Regras:
 
-- `ON CONFLICT (peca_uuid) DO NOTHING`.
+- Inserção idempotente com `WHERE NOT EXISTS (SELECT 1 FROM estoque WHERE peca_uuid = ?)`.
+  Equivale ao `ON CONFLICT (peca_uuid) DO NOTHING` do PostgreSQL, mas também
+  executa no H2 usado pelo smoke test de migrations.
 - `created_by = 'SEED'`.
 - O catálogo correspondente é criado pelo seed do Registry.
 

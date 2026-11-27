@@ -145,8 +145,9 @@ Detalhes em [`adr/ADR-003-ownership-estoque.md`](adr/ADR-003-ownership-estoque.m
   movimento existente e reutilização com dados diferentes resulta em `409`.
 - Movimentações bloqueiam a linha de estoque com lock pessimista antes de
   calcular e persistir o novo saldo, prevenindo lost updates.
-- A criação do estoque usa `ON CONFLICT DO NOTHING` no PostgreSQL; o perfil H2
-  de testes usa `MERGE` apenas para compatibilidade do banco de teste.
+- `EstoqueService` cria a linha de estoque sob demanda com `findOrCreateAndLock`.
+- O seed de estoque (`V6`) é idempotente com `WHERE NOT EXISTS`, compatível com
+  PostgreSQL e com o H2 usado no smoke test de migrations.
 - O recebimento da requisição altera somente seu status. O estoque é creditado
   pela Sprint 3 ao registrar uma NF de entrada.
 

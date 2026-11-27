@@ -87,8 +87,12 @@ Explicação completa em [`adr/ADR-003-ownership-estoque.md`](adr/ADR-003-owners
 - `movimentos_estoque.idempotency_key` é única.
 - Duplicata retorna o movimento existente, sem alterar saldo.
 - NF + estoque: transação local única.
+- Chaves da NF: `nf:<uuid>:<pecaUuid>:CREDITO` no registro e
+  `nf:<uuid>:<pecaUuid>:ESTORNO` no cancelamento.
 - Cancelamento + estorno: transação local única.
 - Concorrência: lock pessimista ou `UPDATE` atômico com verificação de saldo.
+- Chave de acesso da NF: 44 dígitos, validada no domínio e única no banco.
+- Seed de estoque idempotente com `WHERE NOT EXISTS`, compatível com PostgreSQL e H2.
 - **Sem** flag `estoque_creditado`.
 - **Sem** endpoint de reprocessamento de estoque da NF.
 
