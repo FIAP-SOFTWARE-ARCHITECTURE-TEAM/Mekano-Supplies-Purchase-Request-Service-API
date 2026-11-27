@@ -78,6 +78,63 @@ public class RequisicaoCompraResource {
 
     // TODO: habilitar quando autenticacao entrar no escopo
     // @RolesAllowed({"admin", "financeiro"})
+    @POST
+    @Path("/{uuid}/enviar")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Enviar requisicao ao fornecedor")
+    @APIResponse(responseCode = "200", description = "Requisicao enviada",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    schema = @Schema(implementation = RequisicaoCompraResponse.class)))
+    @APIResponse(responseCode = "404", description = "Requisicao nao encontrada",
+            content = @Content(mediaType = "application/problem+json",
+                    schema = @Schema(implementation = ProblemDetail.class)))
+    @APIResponse(responseCode = "409", description = "Transicao de status invalida",
+            content = @Content(mediaType = "application/problem+json",
+                    schema = @Schema(implementation = ProblemDetail.class)))
+    public RequisicaoCompraResponse enviar(@PathParam("uuid") UUID uuid) {
+        return mapper.toResponse(service.enviar(uuid));
+    }
+
+    // TODO: habilitar quando autenticacao entrar no escopo
+    // @RolesAllowed({"admin", "financeiro"})
+    @POST
+    @Path("/{uuid}/receber")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Confirmar recebimento da requisicao")
+    @APIResponse(responseCode = "200", description = "Requisicao recebida",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    schema = @Schema(implementation = RequisicaoCompraResponse.class)))
+    @APIResponse(responseCode = "404", description = "Requisicao nao encontrada",
+            content = @Content(mediaType = "application/problem+json",
+                    schema = @Schema(implementation = ProblemDetail.class)))
+    @APIResponse(responseCode = "409", description = "Transicao de status invalida",
+            content = @Content(mediaType = "application/problem+json",
+                    schema = @Schema(implementation = ProblemDetail.class)))
+    public RequisicaoCompraResponse receber(@PathParam("uuid") UUID uuid) {
+        return mapper.toResponse(service.receber(uuid));
+    }
+
+    // TODO: habilitar quando autenticacao entrar no escopo
+    // @RolesAllowed({"admin", "financeiro"})
+    @POST
+    @Path("/{uuid}/cancelar")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Cancelar requisicao aberta")
+    @APIResponse(responseCode = "200", description = "Requisicao cancelada",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                    schema = @Schema(implementation = RequisicaoCompraResponse.class)))
+    @APIResponse(responseCode = "404", description = "Requisicao nao encontrada",
+            content = @Content(mediaType = "application/problem+json",
+                    schema = @Schema(implementation = ProblemDetail.class)))
+    @APIResponse(responseCode = "409", description = "Transicao invalida ou requisicao de ordem de servico",
+            content = @Content(mediaType = "application/problem+json",
+                    schema = @Schema(implementation = ProblemDetail.class)))
+    public RequisicaoCompraResponse cancelar(@PathParam("uuid") UUID uuid) {
+        return mapper.toResponse(service.cancelar(uuid));
+    }
+
+    // TODO: habilitar quando autenticacao entrar no escopo
+    // @RolesAllowed({"admin", "financeiro"})
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Listar requisicoes de compra",

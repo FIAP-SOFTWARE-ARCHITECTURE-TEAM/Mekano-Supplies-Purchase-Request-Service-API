@@ -70,6 +70,37 @@ public class RequisicaoCompra {
                 .build();
     }
 
+    public RequisicaoCompra enviar() {
+        if (status != StatusRequisicao.ABERTA) {
+            throw new AppException(409, Messages.get("requisicao_compra.transicao.invalida",
+                    status.name(), StatusRequisicao.ENVIADA.name()));
+        }
+        return comStatus(StatusRequisicao.ENVIADA);
+    }
+
+    public RequisicaoCompra receber() {
+        if (status != StatusRequisicao.ENVIADA && status != StatusRequisicao.COMPRA_APROVADA) {
+            throw new AppException(409, Messages.get("requisicao_compra.transicao.invalida",
+                    status.name(), StatusRequisicao.PRODUTO_RECEBIDO.name()));
+        }
+        return comStatus(StatusRequisicao.PRODUTO_RECEBIDO);
+    }
+
+    public RequisicaoCompra cancelar() {
+        if (motivo == MotivoRequisicao.ORDEM_SERVICO) {
+            throw new AppException(409, Messages.get("requisicao_compra.cancelamento.os"));
+        }
+        if (status != StatusRequisicao.ABERTA) {
+            throw new AppException(409, Messages.get("requisicao_compra.transicao.invalida",
+                    status.name(), StatusRequisicao.CANCELADA.name()));
+        }
+        return comStatus(StatusRequisicao.CANCELADA);
+    }
+
+    private RequisicaoCompra comStatus(StatusRequisicao novoStatus) {
+        return RequisicaoCompra.reconstitute(id, itens, novoStatus, motivo, observacao, createdAt);
+    }
+
     private static void validateId(UUID id) {
         if (id == null) {
             throw new AppException(400, Messages.get("requisicao_compra.id.required"));

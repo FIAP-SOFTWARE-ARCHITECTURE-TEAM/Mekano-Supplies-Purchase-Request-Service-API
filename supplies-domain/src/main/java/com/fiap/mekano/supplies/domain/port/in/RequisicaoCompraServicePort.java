@@ -10,6 +10,12 @@ public interface RequisicaoCompraServicePort {
 
     RequisicaoCompra criar(CreateRequisicaoCompraCommand command);
 
+    RequisicaoCompra enviar(UUID id);
+
+    RequisicaoCompra receber(UUID id);
+
+    RequisicaoCompra cancelar(UUID id);
+
     RequisicaoCompra buscar(UUID id);
 
     PageResult<RequisicaoCompra> listar(RequisicaoCompraFiltro filtro, int page, int size);

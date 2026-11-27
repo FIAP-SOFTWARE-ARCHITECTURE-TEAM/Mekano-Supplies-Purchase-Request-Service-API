@@ -138,6 +138,18 @@ O estoque é **local ao Supplies**:
 
 Detalhes em [`adr/ADR-003-ownership-estoque.md`](adr/ADR-003-ownership-estoque.md).
 
+### API interna e concorrência
+
+- `EstoqueService` mantém os saldos e registra cada mudança no ledger.
+- `idempotency_key` é globalmente única; repetição com os mesmos dados retorna o
+  movimento existente e reutilização com dados diferentes resulta em `409`.
+- Movimentações bloqueiam a linha de estoque com lock pessimista antes de
+  calcular e persistir o novo saldo, prevenindo lost updates.
+- A criação do estoque usa `ON CONFLICT DO NOTHING` no PostgreSQL; o perfil H2
+  de testes usa `MERGE` apenas para compatibilidade do banco de teste.
+- O recebimento da requisição altera somente seu status. O estoque é creditado
+  pela Sprint 3 ao registrar uma NF de entrada.
+
 ---
 
 ## 7. Camadas e responsabilidades

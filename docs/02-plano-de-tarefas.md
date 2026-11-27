@@ -156,51 +156,51 @@ Implementar o estoque local, os movimentos idempotentes e o ciclo de vida da req
 
 #### Estoque
 
-- [ ] Domínio `Estoque`, `MovimentoEstoque`, `TipoMovimentoEstoque`, `OrigemMovimentoEstoque`.
-- [ ] Regras:
+- [x] Domínio `Estoque`, `MovimentoEstoque`, `TipoMovimentoEstoque`, `OrigemMovimentoEstoque`.
+- [x] Regras:
   - `CREDITO`: `saldo_atual += qtd`;
   - `DEBITO`: exige `saldo_atual >= qtd`;
   - `RESERVA`: `saldo_reservado += qtd`;
   - `LIBERACAO`: exige `saldo_reservado >= qtd`;
   - `CONSUMO`: exige ambos >= qtd.
-- [ ] `EstoqueService`:
+- [x] `EstoqueService`:
   - `obterOuCriar`;
   - `movimentar`;
   - `listarAbaixoMinimo`.
-- [ ] `idempotency_key` única; duplicata retorna o movimento existente.
-- [ ] Controle de concorrência: lock pessimista ou `UPDATE` atômico com verificação.
-- [ ] Entities/repos/mappers:
+- [x] `idempotency_key` única; duplicata retorna o movimento existente.
+- [x] Controle de concorrência via lock pessimista na linha de estoque.
+- [x] Entities/repos/mappers:
   - `EstoqueEntity`, `MovimentoEstoqueEntity`;
   - migrations `V3__create_estoque.sql` e `V4__create_movimentos_estoque.sql`.
-- [ ] API interna:
+- [x] API interna:
   - `POST /api/v4/internal/estoque/movimentos`;
   - `GET /api/v4/internal/estoque/{pecaUuid}`;
   - `GET /api/v4/internal/estoque/abaixo-minimo`.
-- [ ] `@RolesAllowed("service:estoque")` comentado.
+- [x] `@RolesAllowed("service:estoque")` comentado.
 
 #### Ciclo da requisição
 
-- [ ] `enviar`: `ABERTA → ENVIADA`.
-- [ ] `receber`: `ENVIADA`/`COMPRA_APROVADA → PRODUTO_RECEBIDO`.
-- [ ] `cancelar`: `ABERTA → CANCELADA`; bloquear `ORDEM_SERVICO`.
-- [ ] `409` para transições inválidas.
-- [ ] `obterOuCriar` estoque na criação da requisição.
+- [x] `enviar`: `ABERTA → ENVIADA`.
+- [x] `receber`: `ENVIADA`/`COMPRA_APROVADA → PRODUTO_RECEBIDO`.
+- [x] `cancelar`: `ABERTA → CANCELADA`; bloquear `ORDEM_SERVICO`.
+- [x] `409` para transições inválidas.
+- [x] `obterOuCriar` estoque na criação da requisição.
 
 #### Integração real
 
-- [ ] Substituir mock do Registry pelo client real no fluxo de criação.
-- [ ] Contract test do batch.
-- [ ] Testes de concorrência e idempotência.
-- [ ] Atualizar `docs/03-modelo-de-dados.md`, `docs/04-contratos-api.md` e `docs/01-arquitetura.md`.
+- [x] Fluxo de criação usa o client REST do Registry.
+- [x] Contract test do batch.
+- [x] Testes de concorrência e idempotência.
+- [x] Atualizar `docs/03-modelo-de-dados.md`, `docs/04-contratos-api.md` e `docs/01-arquitetura.md`.
 - [ ] Abrir PR.
 
 ### Critérios de aceite
 
-- [ ] Estoque e movimentos funcionando em `/api/v4/internal/estoque`.
-- [ ] Idempotência comprovada com teste.
-- [ ] Sem lost update em débitos concorrentes.
-- [ ] Ciclo da requisição completo.
-- [ ] Integração real com o batch do Registry.
+- [x] Estoque e movimentos funcionando em `/api/v4/internal/estoque`.
+- [x] Idempotência comprovada com teste.
+- [x] Sem lost update em débitos concorrentes.
+- [x] Ciclo da requisição completo.
+- [x] Integração real com o batch do Registry.
 - [ ] CI verde.
 
 ---

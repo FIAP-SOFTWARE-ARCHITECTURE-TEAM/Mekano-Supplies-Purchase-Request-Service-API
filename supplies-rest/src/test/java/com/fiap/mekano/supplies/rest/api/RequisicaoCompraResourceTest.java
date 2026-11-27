@@ -46,6 +46,8 @@ class RequisicaoCompraResourceTest {
     void limparBaseECatalogar() throws Exception {
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement()) {
+            statement.executeUpdate("delete from movimentos_estoque");
+            statement.executeUpdate("delete from estoque");
             statement.executeUpdate("delete from itens_requisicao_compra");
             statement.executeUpdate("delete from requisicoes_compra");
         }
@@ -89,6 +91,15 @@ class RequisicaoCompraResourceTest {
                 .body("itens[0].quantidade", equalTo(5))
                 .body("itens[0].valorUnitario", equalTo(45.90f))
                 .extract().path("uuid");
+
+        given()
+                .when()
+                .get("/api/v4/internal/estoque/" + PECA_A)
+                .then()
+                .statusCode(200)
+                .body("pecaUuid", equalTo(PECA_A.toString()))
+                .body("saldoAtual", equalTo(0))
+                .body("saldoReservado", equalTo(0));
 
         given()
                 .when()
@@ -277,6 +288,53 @@ class RequisicaoCompraResourceTest {
     }
 
     @Test
+    @DisplayName("POST envia e recebe requisicao com transicoes validas")
+    void enviarEReceberRequisicao() {
+        String uuid = criarRequisicaoEObterUuid(PECA_A);
+
+        given()
+                .when()
+                .post(BASE_PATH + "/" + uuid + "/enviar")
+                .then()
+                .statusCode(200)
+                .body("status", equalTo("ENVIADA"));
+
+        given()
+                .when()
+                .post(BASE_PATH + "/" + uuid + "/receber")
+                .then()
+                .statusCode(200)
+                .body("status", equalTo("PRODUTO_RECEBIDO"));
+
+        given()
+                .when()
+                .post(BASE_PATH + "/" + uuid + "/receber")
+                .then()
+                .statusCode(409)
+                .contentType(containsString("application/problem+json"));
+    }
+
+    @Test
+    @DisplayName("POST cancela requisicao aberta e rejeita transicao posterior")
+    void cancelarRequisicaoAberta() {
+        String uuid = criarRequisicaoEObterUuid(PECA_A);
+
+        given()
+                .when()
+                .post(BASE_PATH + "/" + uuid + "/cancelar")
+                .then()
+                .statusCode(200)
+                .body("status", equalTo("CANCELADA"));
+
+        given()
+                .when()
+                .post(BASE_PATH + "/" + uuid + "/enviar")
+                .then()
+                .statusCode(409)
+                .contentType(containsString("application/problem+json"));
+    }
+
+    @Test
     @DisplayName("GET com filtro invalido retorna 400")
     void listarComFiltroInvalidoRetorna400() {
         given()
@@ -309,5 +367,19 @@ class RequisicaoCompraResourceTest {
                 .post(BASE_PATH)
                 .then()
                 .statusCode(201);
+    }
+
+    private String criarRequisicaoEObterUuid(UUID pecaUuid) {
+        return given()
+                .contentType(ContentType.JSON)
+                .body("""
+                        {"itens": [{"pecaUuid": "%s", "quantidade": 1}]}
+                        """.formatted(pecaUuid))
+                .when()
+                .post(BASE_PATH)
+                .then()
+                .statusCode(201)
+                .extract()
+                .path("uuid");
     }
 }

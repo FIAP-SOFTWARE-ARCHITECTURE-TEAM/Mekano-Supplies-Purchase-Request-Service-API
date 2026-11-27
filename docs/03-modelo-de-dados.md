@@ -29,9 +29,9 @@
 | 5 | `V5__create_nf_entradas.sql` | `nf_entradas` |
 | 6 | `V6__seed_estoque_inicial.sql` | seed |
 
-> **Sprint 1:** `V1` e `V2` estão implementadas e são validadas do zero pelo
-> `MigrationSmokeTest` (Flyway + H2 em modo PostgreSQL). `V3+` pertencem às
-> próximas sprints. A validação no PostgreSQL 16 real é feita via `docker compose`.
+> **Sprint 2:** `V1` a `V4` estão implementadas e são validadas do zero pelo
+> `MigrationSmokeTest` (Flyway + H2 em modo PostgreSQL). A validação integral no
+> PostgreSQL 16 real ainda deve ser feita via `docker compose`.
 
 ---
 

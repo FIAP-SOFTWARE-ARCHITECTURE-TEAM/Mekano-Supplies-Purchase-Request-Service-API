@@ -1,8 +1,10 @@
 # Mekano Supplies Purchase Request Service API
 
-API de **estoque, requisição de compra e NF de entrada** do projeto **Mekano** — **Fase 4**.
+API de **estoque, requisição de compra e NF de entrada** do projeto **Mekano** — **Sprint 2**.
 
-> **Status atual:** Sprint 1 (requisição de compra). Estrutura Maven multi-módulo, Docker Compose, CI e ADRs da fundação concluídos; `POST`/`GET` de requisição de compra implementados com validação de peças via Registry (WireMock nos testes).
+> **Status atual:** Sprint 2 (estoque e ciclo da requisição). Requisições, transições,
+> movimentos idempotentes e consulta de estoque estão implementados. NF de entrada
+> pertence à Sprint 3.
 
 > **Prefixo de todos os endpoints:** `/api/v4`
 >
@@ -33,6 +35,15 @@ O Supplies é o serviço de **suprimentos e inventário** do Mekano. Ele é resp
   - buscar;
   - cancelar (com estorno de estoque).
 - **API interna de estoque** para consumidores futuros.
+
+### Sprint 2 — estoque e ciclo da requisição
+
+- Movimentos `CREDITO`, `DEBITO`, `RESERVA`, `LIBERACAO` e `CONSUMO` registrados
+  em ledger com chave idempotente.
+- Débitos serializados por lock pessimista na linha do estoque.
+- A criação da requisição inicializa linhas de estoque; recebimento não credita
+  saldo (crédito é responsabilidade da NF de entrada na Sprint 3).
+- Contratos: [`docs/04-contratos-api.md`](docs/04-contratos-api.md).
 
 ## 2. O que este serviço NÃO faz
 

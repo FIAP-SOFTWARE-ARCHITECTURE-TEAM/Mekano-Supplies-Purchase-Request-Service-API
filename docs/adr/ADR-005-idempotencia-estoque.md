@@ -1,7 +1,7 @@
 # ADR-005 — Idempotência e consistência do estoque
 
 **Status:** Aceita
-**Fase:** 4
+**Fase:** 2
 **Data:** 2026-11-26
 
 ---
