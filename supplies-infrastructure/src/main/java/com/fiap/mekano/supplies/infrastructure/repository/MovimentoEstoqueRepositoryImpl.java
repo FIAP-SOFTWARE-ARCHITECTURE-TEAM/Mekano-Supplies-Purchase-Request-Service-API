@@ -12,8 +12,10 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import org.hibernate.exception.ConstraintViolationException;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.UUID;
 
 @ApplicationScoped
 public class MovimentoEstoqueRepositoryImpl implements MovimentoEstoqueRepositoryPort {
@@ -37,6 +39,23 @@ public class MovimentoEstoqueRepositoryImpl implements MovimentoEstoqueRepositor
                 .getResultStream()
                 .findFirst()
                 .map(MovimentoEstoqueRepositoryImpl::toDomain);
+    }
+
+    @Override
+    public List<MovimentoEstoque> findByReferenciaUuid(UUID referenciaUuid) {
+        if (referenciaUuid == null) {
+            return List.of();
+        }
+        return entityManager.createQuery("""
+                        select movimento
+                          from MovimentoEstoqueEntity movimento
+                         where movimento.referenciaUuid = :referenciaUuid
+                         order by movimento.id
+                        """, MovimentoEstoqueEntity.class)
+                .setParameter("referenciaUuid", referenciaUuid)
+                .getResultStream()
+                .map(MovimentoEstoqueRepositoryImpl::toDomain)
+                .toList();
     }
 
     @Override

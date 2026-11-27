@@ -146,7 +146,18 @@ Resposta `201`:
   "chaveAcesso": "12345678901234567890123456789012345678901234",
   "valorTotal": 459.00,
   "status": "ATIVA",
+  "motivoCancelamento": null,
+  "dataCancelamento": null,
   "createdAt": "2026-11-26T10:00:00",
+  "itens": [
+    {
+      "pecaUuid": "55555555-5555-5555-5555-555555555555",
+      "pecaCodigo": "PEA-001",
+      "pecaDescricao": "Filtro de Oleo",
+      "quantidade": 10,
+      "valorUnitario": 45.90
+    }
+  ],
   "estoque": [
     {
       "pecaUuid": "55555555-5555-5555-5555-555555555555",
@@ -176,6 +187,9 @@ Regras:
 GET /api/v4/nf-entrada?page=0&size=20&status=ATIVA&requisicaoUuid=...&chaveAcesso=...
 ```
 
+Resposta `200` com `content`, `page`, `size`, `totalElements` e `totalPages`.
+Filtro `status` inválido (diferente de `ATIVA`/`CANCELADA`) retorna `400`.
+
 ### 3.3 Buscar por UUID
 
 ```http
@@ -194,6 +208,10 @@ Content-Type: application/json
   "motivo": "Nota emitida em duplicidade"
 }
 ```
+
+Respostas: `200` com a NF cancelada e os movimentos de estorno; `400` para
+motivo inválido; `404` para UUID inexistente; `409` para NF já cancelada ou
+saldo insuficiente.
 
 Regras:
 
