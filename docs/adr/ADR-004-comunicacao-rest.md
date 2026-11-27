@@ -16,6 +16,9 @@ unitario. O catalogo e propriedade do `Mekano-Registry-Service-API`.
 - Endpoint do Registry: `POST /api/v4/internal/pecas/batch`.
 - O Supplies envia a lista de `pecaUuids` em uma unica chamada (batch),
   evitando N+1.
+- A resposta deve classificar cada UUID solicitado exatamente uma vez em
+  `pecas` ou `naoEncontradas`; campos obrigatorios ausentes, IDs inesperados
+  ou respostas incompletas sao tratados como falha do Registry.
 - Configuracao:
   - `registry.base-url` (default `http://localhost:8081`);
   - `registry.timeout-ms` (default `3000`);
@@ -24,7 +27,10 @@ unitario. O catalogo e propriedade do `Mekano-Registry-Service-API`.
   - peca inexistente -> `404`;
   - peca inativa -> `409`;
   - Registry indisponivel, timeout ou resposta invalida -> `503`.
-- Contrato coberto por testes com **WireMock**.
+- Timeout validado por teste WireMock; o valor padrao e 3000 ms e pode ser
+  alterado por `REGISTRY_TIMEOUT_MS`.
+- Contrato, respostas incompletas e erros cobertos por testes com **WireMock**;
+  o fluxo entre servicos e validado pelo E2E do Registry.
 - Para desenvolvimento sem o Registry implementado existe o
   `StubPecaCatalogAdapter`, habilitado por `supplies.registry.stub=true`.
 
