@@ -2,7 +2,7 @@
 
 API de **estoque, requisição de compra e NF de entrada** do projeto **Mekano** — **Fase 4**.
 
-> **Status atual:** Sprint 0 (fundação). Este repositório contém a documentação, o README e o `.gitignore`; a estrutura Maven, o Docker Compose e o CI serão adicionados na sequência do Sprint 0.
+> **Status atual:** Sprint 1 (requisição de compra). Estrutura Maven multi-módulo, Docker Compose, CI e ADRs da fundação concluídos; `POST`/`GET` de requisição de compra implementados com validação de peças via Registry (WireMock nos testes).
 
 > **Prefixo de todos os endpoints:** `/api/v4`
 >
@@ -154,6 +154,18 @@ docker compose up -d --build
 
 > As migrations são **finais** (sem migrations de correção). Durante a fase acadêmica, alterações de schema devem ser feitas na migration original e o volume recriado.
 
+### 6.6 Testes automatizados
+
+Os testes usam **H2 em memória (modo PostgreSQL)**, sem depender de Docker:
+
+```bash
+./mvnw -B -ntp verify
+```
+
+- `MigrationSmokeTest` aplica `V1`/`V2` do zero via Flyway.
+- Testes de contrato do client do Registry usam **WireMock**.
+- Testes REST usam `@InjectMock` do `PecaCatalogPort` e RestAssured.
+
 ---
 
 ## 7. Banco de dados e DBeaver
@@ -182,7 +194,9 @@ Detalhes em [`docs/06-operacao-local.md`](docs/06-operacao-local.md).
 
 ## 8. Seed inicial
 
-A migration `V6__seed_estoque_inicial.sql` cria o estoque das peças do seed do Registry:
+> **Previsto para o Sprint 2/3.** A migration `V6__seed_estoque_inicial.sql` ainda
+> não existe nesta branch (Sprint 1 cobre apenas `V1` e `V2`). Quando implementada,
+> criará o estoque das peças do seed do Registry:
 
 | Peça | UUID | saldo_atual | saldo_reservado | estoque_minimo |
 |---|---|---|---|---|
@@ -195,13 +209,18 @@ A migration `V6__seed_estoque_inicial.sql` cria o estoque das peças do seed do 
 
 ## 9. Endpoints
 
-### 9.1 Públicos
+### 9.1 Implementados (Sprint 1)
 
 | Método | Endpoint | Descrição |
 |---|---|---|
-| POST | `/api/v4/requisicoes-compra` | Cria requisição `ABERTA` |
-| GET | `/api/v4/requisicoes-compra` | Lista com filtros e paginação |
+| POST | `/api/v4/requisicoes-compra` | Cria requisição `ABERTA` com `motivo=ESTOQUE_MINIMO` |
+| GET | `/api/v4/requisicoes-compra` | Lista com filtros (`status`, `motivo`, `pecaUuid`) e paginação |
 | GET | `/api/v4/requisicoes-compra/{uuid}` | Busca por UUID |
+
+### 9.2 Previstos (Sprints 2 e 3)
+
+| Método | Endpoint | Descrição |
+|---|---|---|
 | POST | `/api/v4/requisicoes-compra/{uuid}/enviar` | `ABERTA → ENVIADA` |
 | POST | `/api/v4/requisicoes-compra/{uuid}/receber` | `ENVIADA`/`COMPRA_APROVADA → PRODUTO_RECEBIDO` |
 | POST | `/api/v4/requisicoes-compra/{uuid}/cancelar` | `ABERTA → CANCELADA` |
@@ -210,7 +229,7 @@ A migration `V6__seed_estoque_inicial.sql` cria o estoque das peças do seed do 
 | GET | `/api/v4/nf-entrada/{uuid}` | Busca NF + itens + movimentos |
 | POST | `/api/v4/nf-entrada/{uuid}/cancelar` | `ATIVA → CANCELADA` + estorna estoque |
 
-### 9.2 Internos (estoque)
+### 9.3 Internos (estoque — Sprint 2)
 
 | Método | Endpoint | Descrição |
 |---|---|---|
@@ -239,6 +258,13 @@ Detalhes em [`docs/07-decisoes-e-riscos.md`](docs/07-decisoes-e-riscos.md).
 ## 11. Testes e Postman
 
 - Testes unitários, de integração, REST, contrato e concorrência.
+- **Sprint 1 (atual):**
+  - domínio (`RequisicaoCompraTest`, `ItemRequisicaoCompraTest`);
+  - application (`RequisicaoCompraServiceTest`, mock do `PecaCatalogPort`);
+  - repositório (`RequisicaoCompraRepositoryImplTest`);
+  - REST (`RequisicaoCompraResourceTest`, health check);
+  - contrato do client do Registry (`RegistryPecaCatalogAdapterTest` + WireMock);
+  - migrations (`MigrationSmokeTest`).
 - A **migração dos testes automatizados** das pastas `/test` do monólito e a **organização dos JSONs do Postman** serão feitas na branch final:
   - `test/sprint-5-testes-e-postman`
 - Durante os sprints 1–4, cada PR mantém o build verde com testes mínimos das novas classes.

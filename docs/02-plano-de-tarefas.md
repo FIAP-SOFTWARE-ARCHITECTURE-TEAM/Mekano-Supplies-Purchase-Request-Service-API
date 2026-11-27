@@ -40,37 +40,37 @@ Criar a base do projeto, a documentação e o ambiente local.
 - [x] Criar `README.md`.
 - [x] Criar `.gitignore`.
 - [x] Criar `docs/` com escopo, arquitetura, plano, modelo, contratos, testes, operação, decisões e ADRs.
-- [ ] Criar POM pai e módulos:
+- [x] Criar POM pai e módulos:
   - `supplies-domain`
   - `supplies-application`
   - `supplies-infrastructure`
   - `supplies-rest`
-- [ ] Configurar Java 17, Quarkus 3.36.0, Lombok, MapStruct, Jandex, Surefire e JaCoCo.
-- [ ] Configurar `quarkus.rest.path=/api/v4`.
-- [ ] Configurar datasource PostgreSQL, Flyway, OpenAPI, health, metrics e logs.
-- [ ] Configurar `registry.base-url` e timeout do cliente.
-- [ ] Criar `docker-compose.yml` com `supplies-db` e `supplies-api`.
-- [ ] Criar `.env.example`.
-- [ ] Criar `Dockerfile`.
-- [ ] Criar CI `.github/workflows/ci.yml` com `mvn -B verify`.
-- [ ] Criar ADRs:
+- [x] Configurar Java 17, Quarkus 3.36.0, Lombok, MapStruct, Jandex, Surefire e JaCoCo.
+- [x] Configurar `quarkus.rest.path=/api/v4`.
+- [x] Configurar datasource PostgreSQL, Flyway, OpenAPI, health, metrics e logs.
+- [x] Configurar `registry.base-url` e timeout do cliente.
+- [x] Criar `docker-compose.yml` com `supplies-db` e `supplies-api`.
+- [x] Criar `.env.example`.
+- [x] Criar `Dockerfile`.
+- [x] Criar CI `.github/workflows/ci.yml` com `mvn -B verify`.
+- [x] Criar ADRs:
   - `ADR-001-stack.md`
   - `ADR-002-postgresql.md`
   - `ADR-003-ownership-estoque.md`
   - `ADR-004-comunicacao-rest.md`
   - `ADR-005-idempotencia-estoque.md`
   - `ADR-006-migrations-finais.md`
-- [ ] Criar `PecaCatalogPort` + stub/WireMock.
-- [ ] Abrir PR `start → main`.
+- [x] Criar `PecaCatalogPort` + stub/WireMock.
+- [x] Abrir PR `start → main`.
 
 ### Critérios de aceite
 
-- [ ] `mvn -B verify` executa sem erros.
-- [ ] `docker compose config` válido.
-- [ ] API sobe em `http://localhost:8082/api/v4`.
-- [ ] `/q/health` responde `UP`.
-- [ ] README e `docs/` revisados.
-- [ ] Nenhum push direto em `main`.
+- [x] `mvn -B verify` executa sem erros.
+- [x] `docker compose config` válido.
+- [ ] API sobe em `http://localhost:8082/api/v4` (não validado em runtime: daemon Docker indisponível).
+- [x] `/q/health` responde `UP`.
+- [x] README e `docs/` revisados.
+- [x] Nenhum push direto em `main`.
 
 ---
 
@@ -84,11 +84,11 @@ Implementar o núcleo da requisição de compra, com validação de peças via R
 
 #### Domínio
 
-- [ ] `RequisicaoCompra` com factories `criar`/`reconstitute`.
-- [ ] `ItemRequisicaoCompra`.
-- [ ] `StatusRequisicao`: `ABERTA`, `ENVIADA`, `COMPRA_APROVADA`, `PRODUTO_RECEBIDO`, `CANCELADA`.
-- [ ] `MotivoRequisicao`: `ESTOQUE_MINIMO`, `ORDEM_SERVICO`.
-- [ ] Regras:
+- [x] `RequisicaoCompra` com factories `criar`/`reconstitute`.
+- [x] `ItemRequisicaoCompra`.
+- [x] `StatusRequisicao`: `ABERTA`, `ENVIADA`, `COMPRA_APROVADA`, `PRODUTO_RECEBIDO`, `CANCELADA`.
+- [x] `MotivoRequisicao`: `ESTOQUE_MINIMO`, `ORDEM_SERVICO`.
+- [x] Regras:
   - pelo menos 1 item;
   - quantidade > 0;
   - sem peça duplicada;
@@ -96,21 +96,21 @@ Implementar o núcleo da requisição de compra, com validação de peças via R
 
 #### Application
 
-- [ ] `RequisicaoCompraService`: criar, listar, buscar.
-- [ ] `PecaCatalogPort` para consulta em lote.
-- [ ] Validação de peças existentes/ativas.
-- [ ] Snapshot de `pecaCodigo`, `pecaDescricao` e `valorUnitario`.
-- [ ] `@Transactional` nos métodos de escrita.
+- [x] `RequisicaoCompraService`: criar, listar, buscar.
+- [x] `PecaCatalogPort` para consulta em lote.
+- [x] Validação de peças existentes/ativas.
+- [x] Snapshot de `pecaCodigo`, `pecaDescricao` e `valorUnitario`.
+- [x] `@Transactional` nos métodos de escrita.
 
 #### Infrastructure
 
-- [ ] `RequisicaoCompraEntity`, `ItemRequisicaoCompraEntity`.
-- [ ] Repositórios Panache.
-- [ ] Mappers MapStruct.
-- [ ] Migrations:
+- [x] `RequisicaoCompraEntity`, `ItemRequisicaoCompraEntity`.
+- [x] Repositórios Panache.
+- [x] Mappers MapStruct.
+- [x] Migrations:
   - `V1__create_requisicoes_compra.sql`
   - `V2__create_itens_requisicao_compra.sql`
-- [ ] `RegistryPecaClient` (MicroProfile REST Client) com:
+- [x] `RegistryPecaClient` (MicroProfile REST Client) com:
   - `POST /api/v4/internal/pecas/batch`;
   - timeout;
   - tratamento de `404`/`5xx`;
@@ -118,31 +118,31 @@ Implementar o núcleo da requisição de compra, com validação de peças via R
 
 #### REST
 
-- [ ] `RequisicaoCompraResource`:
+- [x] `RequisicaoCompraResource`:
   - `POST /api/v4/requisicoes-compra`;
   - `GET /api/v4/requisicoes-compra`;
   - `GET /api/v4/requisicoes-compra/{uuid}`.
-- [ ] DTOs de entrada/saída.
-- [ ] Paginação e filtros.
-- [ ] `@RolesAllowed({"admin", "financeiro"})` comentado.
+- [x] DTOs de entrada/saída.
+- [x] Paginação e filtros.
+- [x] `@RolesAllowed({"admin", "financeiro"})` comentado.
 
 #### Testes mínimos e documentação
 
-- [ ] Testes de domínio.
-- [ ] Testes de service com mock do `PecaCatalogPort`.
-- [ ] Testes de repositório.
-- [ ] Testes REST.
-- [ ] Teste de contrato do client com WireMock.
-- [ ] Atualizar `docs/03-modelo-de-dados.md` e `docs/04-contratos-api.md`.
-- [ ] Abrir PR.
+- [x] Testes de domínio.
+- [x] Testes de service com mock do `PecaCatalogPort`.
+- [x] Testes de repositório.
+- [x] Testes REST.
+- [x] Teste de contrato do client com WireMock.
+- [x] Atualizar `docs/03-modelo-de-dados.md` e `docs/04-contratos-api.md`.
+- [ ] Abrir PR (push da branch realizado; PR pendente de criação no GitHub).
 
 ### Critérios de aceite
 
-- [ ] Criar/listar/buscar requisição em `/api/v4`.
-- [ ] Peça inexistente → `404`; inativa → `409`.
-- [ ] Snapshots gravados corretamente.
-- [ ] Migrations aplicadas do zero.
-- [ ] CI verde.
+- [x] Criar/listar/buscar requisição em `/api/v4`.
+- [x] Peça inexistente → `404`; inativa → `409`.
+- [x] Snapshots gravados corretamente.
+- [x] Migrations aplicadas do zero (validado em H2 modo PostgreSQL via `MigrationSmokeTest`; PostgreSQL real pendente de Docker).
+- [ ] CI verde (workflow criado; aguardando execução no PR).
 
 ---
 
