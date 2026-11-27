@@ -1,0 +1,70 @@
+services:
+  supplies-db:
+    image: postgres:16-alpine
+    container_name: mekano-supplies-db
+    restart: unless-stopped
+    ports:
+      - "${SUPPLIES_DB_PORT:-5434}:5432"
+    environment:
+      POSTGRES_DB: ${SUPPLIES_DB_NAME:-mekano_supplies}
+      POSTGRES_USER: ${SUPPLIES_DB_USER:-mekano}
+      POSTGRES_PASSWORD: ${SUPPLIES_DB_PASSWORD:-mekano}
+    volumes:
+      - supplies_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${SUPPLIES_DB_USER:-mekano} -d ${SUPPLIES_DB_NAME:-mekano_supplies}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - mekano-supplies-net
+
+  supplies-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mekano-supplies-api
+    restart: unless-stopped
+    ports:
+      - "${SUPPLIES_API_PORT:-8082}:8082"
+    environment:
+      QUARKUS_PROFILE: prod
+      SUPPLIES_DB_HOST: supplies-db
+      SUPPLIES_DB_PORT: 5432
+      SUPPLIES_DB_NAME: ${SUPPLIES_DB_NAME:-mekano_supplies}
+      SUPPLIES_DB_USER: ${SUPPLIES_DB_USER:-mekano}
+      SUPPLIES_DB_PASSWORD: ${SUPPLIES_DB_PASSWORD:-mekano}
+      REGISTRY_URL: ${REGISTRY_URL:-http://host.docker.internal:8081}
+      REGISTRY_TIMEOUT_MS: ${REGISTRY_TIMEOUT_MS:-3000}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      supplies-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8082/q/health/live || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - mekano-supplies-net
+
+networks:
+  mekano-supplies-net:
+    driver: bridge
+
+volumes:
+  supplies_db_data:
+    driver: local

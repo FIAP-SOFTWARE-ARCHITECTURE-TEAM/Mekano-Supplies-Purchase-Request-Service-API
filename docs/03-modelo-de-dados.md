@@ -29,6 +29,10 @@
 | 5 | `V5__create_nf_entradas.sql` | `nf_entradas` |
 | 6 | `V6__seed_estoque_inicial.sql` | seed |
 
+> **Sprint 1:** `V1` e `V2` estão implementadas e são validadas do zero pelo
+> `MigrationSmokeTest` (Flyway + H2 em modo PostgreSQL). `V3+` pertencem às
+> próximas sprints. A validação no PostgreSQL 16 real é feita via `docker compose`.
+
 ---
 
 ## 3. Tabelas
@@ -52,9 +56,9 @@ Valores:
 - `status`: `ABERTA`, `ENVIADA`, `COMPRA_APROVADA`, `PRODUTO_RECEBIDO`, `CANCELADA`.
 - `motivo`: `ESTOQUE_MINIMO`, `ORDEM_SERVICO`.
 
-Índices:
+Restrições e índices:
 
-- `ux_requisicoes_compra_uuid` UNIQUE (`uuid`)
+- `ux_requisicoes_compra_uuid` UNIQUE (`uuid`) — constraint (referenciada pela FK de itens)
 - `ix_requisicoes_compra_status` (`status`)
 - `ix_requisicoes_compra_motivo` (`motivo`)
 - `ix_requisicoes_compra_created_at` (`created_at`)

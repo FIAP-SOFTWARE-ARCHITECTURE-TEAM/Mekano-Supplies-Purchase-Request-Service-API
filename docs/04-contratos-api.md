@@ -4,6 +4,10 @@
 **Base local:** `http://localhost:8082/api/v4`
 **Registry:** `http://localhost:8081/api/v4`
 
+> **Sprint 1:** implementados `POST /requisicoes-compra`,
+> `GET /requisicoes-compra` e `GET /requisicoes-compra/{uuid}`. Envio,
+> recebimento, cancelamento e os demais recursos pertencem às sprints seguintes.
+
 ---
 
 ## 1. Convenções
